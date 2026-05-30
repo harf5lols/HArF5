@@ -4,10 +4,17 @@ import { hostname } from "node:os";
 import { server as wisp, logging } from "@mercuryworkshop/wisp-js/server";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
+import * as scramjet from "@mercuryworkshop/scramjet";
 
 import { scramjetPath } from "@mercuryworkshop/scramjet/path";
 import { libcurlPath } from "@mercuryworkshop/libcurl-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
+
+
+const scram = scramjet.createScramjetRouter?.()
+    || scramjet.router?.()
+    || scramjet.default?.();
+
 
 const publicPath = fileURLToPath(new URL("../public/", import.meta.url));
 

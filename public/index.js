@@ -1,3 +1,17 @@
+let proxyReady = false;
+
+async function waitForWasm() {
+    while (!window.libcurl?.load_wasm) {
+        await new Promise(r => setTimeout(r, 50));
+    }
+
+    await window.libcurl.load_wasm();
+    proxyReady = true;
+
+    console.log("🧬 WASM ready");
+}
+
+waitForWasm();
 "use strict";
 /**
  * @type {HTMLFormElement}

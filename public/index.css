@@ -1,12 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap");
 
-body {
-	font-family: "Roboto", Arial, Helvetica, sans-serif;
-	margin: 0;
-	background: #111;
-	display: flex;
-	flex-direction: column;
-	min-height: 100vh;
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body.proxy-active {
+  display: block; /* IMPORTANT: kills flex interference */
 }
 
 .flex-center {
@@ -25,13 +27,14 @@ body {
 }
 
 #sj-frame {
-	border: none;
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-color: #111;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  display: block;
+  z-index: 2147483647;
+  background: #111;
 }
 
 #sj-error {
@@ -156,4 +159,39 @@ footer a:hover {
 
 .credit input:checked ~ pre {
 	display: block;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+#sj-frame {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  border: none;
+  display: block;
+  z-index: 2147483647;
+  background: #111;
+}
+
+body.proxy-active > *:not(#sj-frame) {
+    display: none !important;
+}
+
+webview {
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    border: none !important;
+
+    z-index: 2147483647 !important;
 }

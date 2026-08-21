@@ -59,6 +59,7 @@
         .c2 { width: 300px; height: 300px; background: lightblue; left: 50%; top: 200px; }
         .c3 { width: 300px; height: 300px; background: purple; left: 42%; top: 300px; }
         .footer { position: fixed; bottom: 10px; width: 100%; color: white; font-size: 14px; z-index: 2; }
+        
         #sj-frame, .iframe-container iframe {
             position: fixed !important; top: 40px !important; left: 0 !important;
             width: 100vw !important; height: calc(100vh - 40px) !important;
@@ -106,8 +107,8 @@
             <a href="https://discord.gg" target="_blank">Discord Server</a> | <a href="games.html">Games</a>
         </div>
         <form id="sj-form" class="search-box">
-            <input id="sj-search-engine" value="https://google.com" type="hidden" />
-            <input id="sj-address" type="text" placeholder="Enter Link Here.." />
+            <input id="sj-search-engine" value="https://duckduckgo.com" type="hidden" />
+            <input id="sj-address" type="text" placeholder="Enter Link or Search Here.." />
         </form>
         <p id="sj-error"></p>
         <pre id="sj-error-code"></pre>
@@ -121,24 +122,20 @@
             sunset: "linear-gradient(to bottom, #e65c00 50%, #F9D423 100%)",
             dark: "linear-gradient(to bottom, #141e30 50%, #243b55 100%)"
         };
-
         const engines = {
             duckduckgo: "https://duckduckgo.com",
             google: "https://google.com",
             bing: "https://bing.com",
             brave: "https://brave.com"
         };
-
         function toggleModal() {
             const modal = document.getElementById('custom-modal');
             modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
         }
-
         function changeTheme(themeName) {
             document.body.style.background = themes[themeName] || themes.default;
             localStorage.setItem('harf-theme', themeName);
         }
-
         function changeTitle(text) {
             const heading = document.getElementById('main-title');
             if (heading) {
@@ -146,7 +143,6 @@
                 localStorage.setItem('harf-title', text);
             }
         }
-
         function changeEngine(engineName) {
             const engineInput = document.getElementById('sj-search-engine');
             if (engineInput && engines[engineName]) {
@@ -154,10 +150,8 @@
                 localStorage.setItem('harf-engine', engineName);
             }
         }
-
         let tabs = [];
         let activeTabId = null;
-
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('harf-theme');
             if (savedTheme) { document.getElementById('theme-select').value = savedTheme; changeTheme(savedTheme); }
@@ -166,40 +160,30 @@
             const savedEngine = localStorage.getItem('harf-engine') || 'duckduckgo';
             if (document.getElementById('engine-select')) document.getElementById('engine-select').value = savedEngine;
             changeEngine(savedEngine);
-
             createNewTab();
         });
-
         function createNewTab() {
             const id = 'tab-' + Date.now();
             tabs.push({ id: id, url: 'Home', isBrowsing: false });
-
             const tabEl = document.createElement('div');
             tabEl.className = 'tab';
             tabEl.id = 'el-' + id;
             tabEl.onclick = () => switchTab(id);
             tabEl.innerHTML = `<span class="tab-title">New Tab</span><span class="close-tab" onclick="closeTab('${id}', event)">×</span>`;
-
             const bar = document.getElementById('tab-bar');
             bar.insertBefore(tabEl, bar.lastElementChild);
-
             const winEl = document.createElement('div');
             winEl.className = 'iframe-container';
             winEl.id = 'win-' + id;
             document.getElementById('browser-windows').appendChild(winEl);
-
             switchTab(id);
         }
-
         function switchTab(id) {
             activeTabId = id;
             const currentTab = tabs.find(t => t.id === id);
-
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
             document.getElementById('el-' + id)?.classList.add('active');
-
             document.querySelectorAll('.iframe-container').forEach(el => el.classList.remove('active'));
-
             const homeUI = document.getElementById('homepage-content');
             if (currentTab && currentTab.isBrowsing) {
                 if (homeUI) homeUI.style.display = "none";
@@ -210,7 +194,6 @@
                 document.body.classList.remove('proxy-active');
             }
         }
-
         function closeTab(id, event) {
             event.stopPropagation();
             if (tabs.length === 1) return;
@@ -219,12 +202,7 @@
             document.getElementById('win-' + id).remove();
             if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
         }
-
-        function keepProxyAlive() {
-            fetch(window.location.origin)
-                .then(() => console.log("⏰ Keep-alive heartbeat successful"))
-                .catch(err => console.error("Keep-alive failed:", err));
-        }
+        function keepProxyAlive() { fetch(window.location.origin).catch(() => {}); }
         setInterval(keepProxyAlive, 300000);
     </script>
 </body>

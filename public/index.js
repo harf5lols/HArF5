@@ -52,7 +52,6 @@ form.addEventListener("submit", async (event) => {
         throw err;
     }
 
-    // Pulls the updated DuckDuckGo/Google search engine dynamically
     const url = search(address.value, searchEngine.value);
     
     let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
@@ -62,40 +61,42 @@ form.addEventListener("submit", async (event) => {
         ]);
     }
 
-    // Find our current active UI tab targets from the main HTML state
+    // 🌟 THE CLEAN INJECTION: Bypass MutationObserver entirely
     if (typeof activeTabId !== "undefined" && typeof tabs !== "undefined") {
         const activeWindow = document.getElementById('win-' + activeTabId);
         const currentTab = tabs.find(t => t.id === activeTabId);
 
         if (activeWindow && currentTab) {
-            // Clear out any old session inside this specific tab window container
+            // Clean the viewport completely to wipe any stuck loop sessions
             activeWindow.innerHTML = "";
 
-            // Create and nest the Scramjet proxy frame inside the active tab
+            // Force Scramjet to natively build its iframe context directly inside the active tab
             const frame = scramjet.createFrame();
             frame.frame.id = "sj-frame";
+            
+            // Append it straight to the tab container right away
             activeWindow.appendChild(frame.frame);
             
-            // Mark tab layout state transitions
+            // Mark tab transitions safely
             currentTab.isBrowsing = true;
             currentTab.url = url;
 
-            // Update the tab strip label to show the active browsing URL
             const tabLabel = document.getElementById('el-' + activeTabId)?.querySelector('.tab-title');
             if (tabLabel) {
                 tabLabel.textContent = address.value;
             }
 
-            // Fire request and pull the tab into absolute focus
+            // Launch proxy routing inside the isolated tab environment
             frame.go(url);
             switchTab(activeTabId);
             return;
         }
     }
 
-    // Fallback behavior if the tab-system global context is missing
+    // Standard fallback logic
     const frame = scramjet.createFrame();
     frame.frame.id = "sj-frame";
     document.body.appendChild(frame.frame);
     frame.go(url);
 });
+

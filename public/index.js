@@ -4,16 +4,26 @@ document.body.classList.add("loading");
 let proxyReady = false;
 
 async function waitForWasm() {
-    while (!window.libcurl?.load_wasm) {
+    let attempts = 0;
+    // Stops checking after 100 tries (5 seconds) to prevent a hard lock
+    while (!window.libcurl?.load_wasm && attempts < 100) {
         await new Promise(r => setTimeout(r, 50));
+        attempts++;
     }
-    await window.libcurl.load_wasm();
-    proxyReady = true;
-    document.body.classList.remove("loading");
-    document.getElementById("boot-screen").classList.add("hidden");
-    console.log("🧬 WASM ready");
+    
+    if (window.libcurl?.load_wasm) {
+        await window.libcurl.load_wasm();
+        proxyReady = true;
+        document.body.classList.remove("loading");
+        document.getElementById("boot-screen")?.classList.add("hidden");
+        console.log("🧬 WASM ready");
+    } else {
+        console.error("❌ Libcurl failed to load within 5 seconds.");
+        document.body.classList.remove("loading");
+    }
 }
 waitForWasm();
+
 
 const form = document.getElementById("sj-form");
 const address = document.getElementById("sj-address");

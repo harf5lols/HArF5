@@ -224,19 +224,23 @@ body.proxy-active .iframe-container.active { display: block; }
             }
         }
 
-        const observer = new MutationObserver(() => {
-            const frame = document.getElementById("sj-frame");
-            if (frame) {
-                const activeWin = document.getElementById('win-' + activeTabId);
-                if (activeWin) {
-                    activeWin.appendChild(frame);
-                    const currentTab = tabs.find(t => t.id === activeTabId);
-                    if (currentTab) currentTab.isBrowsing = true;
-                    switchTab(activeTabId);
-                }
-            }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
+const observer = new MutationObserver(() => { 
+    const frame = document.getElementById("sj-frame"); 
+    if (frame) { 
+        // INSTANTLY disconnect so the appendChild action below won't trigger a loop
+        observer.disconnect(); 
+        
+        const activeWin = document.getElementById('win-' + activeTabId);
+        if (activeWin) {
+            activeWin.appendChild(frame);
+            const currentTab = tabs.find(t => t.id === activeTabId);
+            if (currentTab) currentTab.isBrowsing = true;
+            switchTab(activeTabId);
+        }
+    } 
+}); 
+observer.observe(document.body, { childList: true, subtree: true });
+
 		
 		// Add this engine map right beneath your 'const themes = { ... };' object
 const engines = {

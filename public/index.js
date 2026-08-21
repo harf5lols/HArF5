@@ -5,7 +5,6 @@ let proxyReady = false;
 
 async function waitForWasm() {
     let attempts = 0;
-    // Stops checking after 100 tries (5 seconds) to prevent a hard lock
     while (!window.libcurl?.load_wasm && attempts < 100) {
         await new Promise(r => setTimeout(r, 50));
         attempts++;
@@ -17,12 +16,30 @@ async function waitForWasm() {
         document.body.classList.remove("loading");
         document.getElementById("boot-screen")?.classList.add("hidden");
         console.log("🧬 WASM ready");
+
+        // 🌟 THE AUTO-LAUNCH GATEKEEPER: Safely triggers games now that WASM is fully ready
+        if (typeof queuedUrlToLoad !== "undefined" && queuedUrlToLoad !== null) {
+            const addressInput = document.getElementById("sj-address");
+            const proxyForm = document.getElementById("sj-form");
+
+            if (addressInput && proxyForm) {
+                // Insert the game URL cleanly into the address bar interface
+                addressInput.value = queuedUrlToLoad;
+                
+                // Clear out parameter to prevent infinite routing bugs
+                queuedUrlToLoad = null; 
+
+                // Safely execute form submit sequence using your verified Scramjet tabs
+                proxyForm.requestSubmit();
+            }
+        }
     } else {
         console.error("❌ Libcurl failed to load within 5 seconds.");
         document.body.classList.remove("loading");
     }
 }
 waitForWasm();
+
 
 
 const form = document.getElementById("sj-form");

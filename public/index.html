@@ -242,7 +242,9 @@ function changeEngine(engineName) {
     }
 }
 
-// Update your existing 'DOMContentLoaded' event listener block to look like this:
+// Variable to store our incoming game parameter safely
+let queuedUrlToLoad = null;
+
 window.addEventListener('DOMContentLoaded', () => { 
     const savedTheme = localStorage.getItem('harf-theme'); 
     if (savedTheme) {
@@ -255,12 +257,23 @@ window.addEventListener('DOMContentLoaded', () => {
         changeTitle(savedTitle); 
     }
     
-    // Engine preference initialization (Defaults to DuckDuckGo if empty)
     const savedEngine = localStorage.getItem('harf-engine') || 'duckduckgo';
-    document.getElementById('engine-select').value = savedEngine;
+    if(document.getElementById('engine-select')) {
+        document.getElementById('engine-select').value = savedEngine;
+    }
     changeEngine(savedEngine);
 
+    // 1. Instantly spin up your first browser UI tab viewport
     createNewTab(); 
+
+    // 2. Parse out if a user arrived from games.html with a ?load= parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameUrl = urlParams.get('load');
+    
+    if (gameUrl) {
+        // Stage it in memory so index.js can securely trigger it when WASM is verified alive
+        queuedUrlToLoad = gameUrl;
+    }
 });
 
 // Keep Awake Script for Render Free Tier Containers

@@ -1,162 +1,294 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>HArF 5</title>
-
-<script src="/scram/scramjet.all.js"></script>
-<script src="/baremux/index.js"></script>
-
-<script src="register-sw.js" defer></script>
-<script src="search.js" defer></script>
-<script src="index.js" defer></script>
-
-<style>
-body{
-    margin:0;
-    font-family:Comic Sans MS;
-    background:#FF69D0;
-    text-align:center;
-    overflow:hidden;
+<!-- Paste these at the very top of your <head> section -->
+<link rel="preload" href="/scram/scramjet.wasm.wasm" as="fetch" type="application/wasm" crossorigin>
+<link rel="preload" href="/scram/scramjet.all.js" as="script">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HArF 5</title>
+    <script src="/scram/scramjet.all.js"></script>
+    <script src="/baremux/index.js"></script>
+    <script src="register-sw.js" defer></script>
+    <script src="search.js" defer></script>
+    <script src="index.js" defer></script>
+    <style>
+	body {
+    margin: 0; font-family: Comic Sans MS, sans-serif; text-align: center;
+    overflow: hidden; height: 100dvh; background-attachment: fixed;
+    background: linear-gradient(to bottom, #AB4398 50%, #000000 100%);
+    transition: background 0.3s ease;
 }
-
-.title{
-    margin-top:60px;
-    font-size:60px;
-    color:#ffffff;
-    position:relative;
-    z-index:2;
+.tab-bar {
+    display: flex; background: rgba(0, 0, 0, 0.4); padding: 5px 10px 0;
+    gap: 5px; align-items: flex-end; height: 40px; position: relative; z-index: 10;
 }
-
-.links{
-    margin:10px;
-    color:#ffffff;
-    position:relative;
-    z-index:2;
+.tab {
+    background: rgba(255, 255, 255, 0.2); color: white; padding: 6px 15px;
+    border-radius: 8px 8px 0 0; cursor: pointer; font-size: 14px;
+    display: flex; align-items: center; gap: 8px; max-width: 150px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
-.links a{
-    color:white;
-    text-decoration:none;
-    font-size:18px;
+.tab.active { background: rgba(255, 255, 255, 0.4); font-weight: bold; }
+.close-tab { cursor: pointer; font-weight: bold; opacity: 0.7; }
+.close-tab:hover { opacity: 1; }
+.add-tab-btn {
+    background: rgba(255, 255, 255, 0.3); border: none; color: white;
+    padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-bottom: 5px;
 }
-
-.search-box{
-    margin-top:40px;
-    position:relative;
-    z-index:2;
+.settings-btn {
+    position: fixed; top: 50px; right: 20px; background: rgba(255, 255, 255, 0.2);
+    border: none; color: white; padding: 10px; border-radius: 50%;
+    cursor: pointer; font-size: 20px; z-index: 10;
 }
-
-.search-box input{
-    width:400px;
-    padding:15px;
-    border-radius:25px;
-    border:none;
-    font-size:16px;
-    outline:none;
+.modal {
+    display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: #222; color: white; padding: 25px; border-radius: 15px;
+    z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 300px;
 }
-
-.circle{
-    position:absolute;
-    border-radius:50%;
-    opacity:0.3;
+.modal h3 { margin-top: 0; }
+.modal label { display: block; margin: 15px 0 5px; text-align: left; }
+.modal select, .modal input { width: 100%; padding: 8px; border-radius: 5px; border: none; box-sizing: border-box; }
+.modal-close { margin-top: 20px; background: #AB4398; border: none; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+.title { margin-top: 60px; font-size: 60px; color: #ffffff; position: relative; z-index: 2; }
+.links { margin: 10px; color: #ffffff; position: relative; z-index: 2; }
+.links a { color: white; text-decoration: none; font-size: 18px; }
+.search-box { margin-top: 40px; position: relative; z-index: 2; }
+.search-box input { width: 400px; padding: 15px; border-radius: 25px; border: none; font-size: 16px; outline: none; }
+.circle { position: absolute; border-radius: 50%; opacity: 0.3; z-index: 1; }
+.c1 { width: 300px; height: 300px; background: white; left: 35%; top: 200px; }
+.c2 { width: 300px; height: 300px; background: lightblue; left: 50%; top: 200px; }
+.c3 { width: 300px; height: 300px; background: purple; left: 42%; top: 300px; }
+.footer { position: fixed; bottom: 10px; width: 100%; color: white; font-size: 14px; z-index: 2; }
+.iframe-container {
+    display: none; position: fixed; top: 40px; left: 0; width: 100vw;
+    height: calc(100vh - 40px); z-index: 2147483647; background: white;
 }
+body.proxy-active .iframe-container.active { display: block; }
+.iframe-container iframe, body.proxy-active #sj-frame { width: 100%; height: 100%; border: none; position: static; }
 
-.c1{width:300px;height:300px;background:white;left:35%;top:200px;}
-.c2{width:300px;height:300px;background:lightblue;left:50%;top:200px;}
-.c3{width:300px;height:300px;background:purple;left:42%;top:300px;}
-
-.footer{
-    position:fixed;
-    bottom:10px;
-    width:100%;
-    color:white;
-    font-size:14px;
-    z-index:2;
-}
-</style>
+    </style>
 </head>
-
 <body>
+    <!-- 1. Top Tab Strip Layout -->
+    <div class="tab-bar" id="tab-bar">
+        <button class="add-tab-btn" onclick="createNewTab()">+</button>
+    </div>
 
-<div class="title">HArF 5</div>
+    <!-- 2. Settings Menu Button -->
+    <button class="settings-btn" onclick="toggleModal()">⚙️</button>
 
-<div class="links">
-<a href="https://discord.gg/NHuADvevz" target="_blank">Discord Server</a>
-</div>
+    <!-- 3. Customization Modal Box -->
+    <div class="modal" id="custom-modal">
+        <h3>Homepage Settings</h3>
+        <label>Theme Color:</label>
+        <select id="theme-select" onchange="changeTheme(this.value)">
+            <option value="default">Default Pink/Black</option>
+            <option value="ocean">Ocean Blue</option>
+            <option value="sunset">Sunset Orange</option>
+            <option value="dark">Midnight Dark</option>
+        </select>
+        <label>Custom Title:</label>
+        <input type="text" id="title-input" placeholder="HArF 5" oninput="changeTitle(this.value)" />
+        <button class="modal-close" onclick="toggleModal()">Save & Close</button>
+    </div>
+	
+	<label>Default Search Engine:</label> 
+<select id="engine-select" onchange="changeEngine(this.value)"> 
+    <option value="duckduckgo">DuckDuckGo</option> 
+    <option value="google">Google</option> 
+    <option value="bing">Bing</option> 
+    <option value="brave">Brave</option> 
+</select>
 
-<form id="sj-form" class="search-box">
-    <input
-        id="sj-search-engine"
-        value="https://www.google.com/search?q=%s"
-        type="hidden"
-    />
 
-    <input
-        id="sj-address"
-        type="text"
-        placeholder="Enter Link Here.."
-    />
-</form>
+    <div id="boot-screen"></div>
 
-<p id="sj-error"></p>
-<pre id="sj-error-code"></pre>
+    <!-- 4. Main Desktop UI Elements -->
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+    <div class="circle c3"></div>
+    <div class="title" id="main-title">HArF 5</div>
+    
+    <div class="links">
+        <a href="https://discord.gg/NHuADvevz" target="_blank">Discord Server</a> | <a href="games.html">Games</a>
+    </div>
+    
+    <form id="sj-form" class="search-box">
+        <input id="sj-search-engine" value="https://google.com/search?q=%s" type="hidden" />
+        <input id="sj-address" type="text" placeholder="Enter Link Here.." />
+    </form>
+    
+    <p id="sj-error"></p>
+    <pre id="sj-error-code"></pre>
+    
+    <div class="footer">HArF 5 Beta 3.0</div>
 
-<div class="footer">
-Powered by Scramjet, HArF 5 Beta 1
-</div>
+    <!-- 5. Active Tab Frame Storage Container -->
+    <div id="browser-windows"></div>
+	
+	    <!-- 5. Active Tab Frame Storage Container -->
+    <div id="browser-windows"></div>
 
-<script>
-const observer = new MutationObserver(() => {
-    const frame = document.getElementById("sj-frame");
+    <script>
+        const themes = {
+            default: "linear-gradient(to bottom, #AB4398 50%, #000000 100%)",
+            ocean: "linear-gradient(to bottom, #005c97 50%, #363795 100%)",
+            sunset: "linear-gradient(to bottom, #e65c00 50%, #F9D423 100%)",
+            dark: "linear-gradient(to bottom, #141e30 50%, #243b55 100%)"
+        };
 
-    if (frame) {
-        document.body.classList.add("proxy-active");
+        function toggleModal() {
+            const modal = document.getElementById('custom-modal');
+            modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+        }
 
-        Object.assign(frame.style, {
-            position: "fixed",
-            inset: "0",
-            width: "100vw",
-            height: "100vh",
-            zIndex: "2147483647",
-            border: "none"
+        function changeTheme(themeName) {
+            document.body.style.background = themes[themeName] || themes.default;
+            localStorage.setItem('harf-theme', themeName);
+        }
+
+        function changeTitle(text) {
+            const heading = document.getElementById('main-title');
+            if (heading) {
+                heading.textContent = text || "HArF 5";
+                localStorage.setItem('harf-title', text);
+            }
+        }
+
+        let tabs = [];
+        let activeTabId = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('harf-theme');
+            if (savedTheme) {
+                document.getElementById('theme-select').value = savedTheme;
+                changeTheme(savedTheme);
+            }
+            const savedTitle = localStorage.getItem('harf-title');
+            if (savedTitle) {
+                document.getElementById('title-input').value = savedTitle;
+                changeTitle(savedTitle);
+            }
+            createNewTab();
         });
-    }
-});
 
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
-</script>
+        function createNewTab() {
+            const id = 'tab-' + Date.now();
+            tabs.push({ id: id, url: 'Home', isBrowsing: false });
 
-<script>
+            const tabEl = document.createElement('div');
+            tabEl.className = 'tab';
+            tabEl.id = 'el-' + id;
+            tabEl.onclick = () => switchTab(id);
+            tabEl.innerHTML = `<span class="tab-title">New Tab</span><span class="close-tab" onclick="closeTab('${id}', event)">×</span>`;
 
-const observer = new MutationObserver(() => {
-    const frame = document.getElementById("sj-frame");
+            const bar = document.getElementById('tab-bar');
+            bar.insertBefore(tabEl, bar.lastElementChild);
 
-    if (frame) {
-        document.body.classList.add("proxy-active");
+            const winEl = document.createElement('div');
+            winEl.className = 'iframe-container';
+            winEl.id = 'win-' + id;
+            document.getElementById('browser-windows').appendChild(winEl);
 
-        Object.assign(frame.style, {
-            position: "fixed",
-            inset: "0",
-            width: "100vw",
-            height: "100vh",
-            zIndex: "2147483647",
-            border: "none"
+            switchTab(id);
+        }
+
+        function switchTab(id) {
+            activeTabId = id;
+            const currentTab = tabs.find(t => t.id === id);
+
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('el-' + id)?.classList.add('active');
+
+            document.querySelectorAll('.iframe-container').forEach(el => el.classList.remove('active'));
+
+            if (currentTab && currentTab.isBrowsing) {
+                document.body.classList.add('proxy-active');
+                document.getElementById('win-' + id)?.classList.add('active');
+            } else {
+                document.body.classList.remove('proxy-active');
+            }
+        }
+
+        function closeTab(id, event) {
+            event.stopPropagation();
+            if (tabs.length === 1) return;
+
+            tabs = tabs.filter(t => t.id !== id);
+            document.getElementById('el-' + id).remove();
+            document.getElementById('win-' + id).remove();
+
+            if (activeTabId === id) {
+                switchTab(tabs[tabs.length - 1].id);
+            }
+        }
+
+        const observer = new MutationObserver(() => {
+            const frame = document.getElementById("sj-frame");
+            if (frame) {
+                const activeWin = document.getElementById('win-' + activeTabId);
+                if (activeWin) {
+                    activeWin.appendChild(frame);
+                    const currentTab = tabs.find(t => t.id === activeTabId);
+                    if (currentTab) currentTab.isBrowsing = true;
+                    switchTab(activeTabId);
+                }
+            }
         });
+        observer.observe(document.body, { childList: true, subtree: true });
+		
+		// Add this engine map right beneath your 'const themes = { ... };' object
+const engines = {
+    duckduckgo: "https://duckduckgo.com",
+    google: "https://google.com",
+    bing: "https://bing.com",
+    brave: "https://brave.com"
+};
+
+// Add this function right beneath your 'changeTitle' function
+function changeEngine(engineName) {
+    const engineInput = document.getElementById('sj-search-engine');
+    if (engineInput && engines[engineName]) {
+        engineInput.value = engines[engineName];
+        localStorage.setItem('harf-engine', engineName);
     }
+}
+
+// Update your existing 'DOMContentLoaded' event listener block to look like this:
+window.addEventListener('DOMContentLoaded', () => { 
+    const savedTheme = localStorage.getItem('harf-theme'); 
+    if (savedTheme) {
+        document.getElementById('theme-select').value = savedTheme;
+        changeTheme(savedTheme); 
+    }
+    const savedTitle = localStorage.getItem('harf-title'); 
+    if (savedTitle) {
+        document.getElementById('title-input').value = savedTitle;
+        changeTitle(savedTitle); 
+    }
+    
+    // Engine preference initialization (Defaults to DuckDuckGo if empty)
+    const savedEngine = localStorage.getItem('harf-engine') || 'duckduckgo';
+    document.getElementById('engine-select').value = savedEngine;
+    changeEngine(savedEngine);
+
+    createNewTab(); 
 });
 
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+// Keep Awake Script for Render Free Tier Containers
+function keepProxyAlive() {
+    // Dynamically fetches your current active deployment domain link
+    fetch(window.location.origin)
+        .then(() => console.log("⏰ Keep-alive heartbeat successful"))
+        .catch(err => console.error("Keep-alive failed:", err));
+}
 
-</script>
+// Automatically fires a web request every 5 minutes (300,000 ms) 
+// This prevents Render from detecting 15 minutes of inactivity!
+setInterval(keepProxyAlive, 300000); 
 
+
+    </script>
 </body>
 </html>

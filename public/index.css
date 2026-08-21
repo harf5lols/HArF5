@@ -120,6 +120,30 @@ footer a:hover {
 	border-radius: 6px;
 }
 
+#boot-screen {
+    position: fixed;
+    inset: 0;
+    background: #FF69D0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+    font-family: Comic Sans MS;
+
+    z-index: 999999;
+}
+
+#boot-screen.hidden {
+    display: none;
+}
+
+body.loading > *:not(#boot-screen) {
+    visibility: hidden;
+}
+
 .credit {
 	border-radius: 10px;
 	padding: 10px;

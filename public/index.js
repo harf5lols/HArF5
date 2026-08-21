@@ -17,26 +17,29 @@ async function waitForWasm() {
         document.getElementById("boot-screen")?.classList.add("hidden");
         console.log("🧬 WASM ready");
 
-        // 🌟 RE-TIMED AUTO-LAUNCHER: Tracks the global variable safely
-        if (window.queuedUrlToLoad) {
+        // 🌟 FORCE AUTO-LAUNCH ON STARTUP:
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameUrlToLoad = urlParams.get('load');
+
+        if (gameUrlToLoad) {
+            // Keep waiting until your HTML script initializes activeTabId and tabs array
+            let tabReadyAttempts = 0;
+            while ((typeof activeTabId === "undefined" || !activeTabId) && tabReadyAttempts < 50) {
+                await new Promise(r => setTimeout(r, 50));
+                tabReadyAttempts++;
+            }
+
             const addressInput = document.getElementById("sj-address");
             const proxyForm = document.getElementById("sj-form");
 
-            // Safety loop: waits briefly if the HTML tab UI isn't completely rendered yet
-            let UIReadyAttempts = 0;
-            while ((typeof activeTabId === "undefined" || !activeTabId) && UIReadyAttempts < 20) {
-                await new Promise(r => setTimeout(r, 50));
-                UIReadyAttempts++;
-            }
-
             if (addressInput && proxyForm) {
-                // Populate the UI input field with the proxied game link
-                addressInput.value = window.queuedUrlToLoad;
+                // Input the game destination and execute the proxy submit handler
+                addressInput.value = gameUrlToLoad;
                 
-                // Reset the global flag to prevent infinite reload looping glitches
-                window.queuedUrlToLoad = null; 
-
-                // Execute the form submission down your active Scramjet tabs
+                // Clear out parameters from the browser's address history bar cleanly
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Fire request down your Scramjet tab pipeline
                 proxyForm.requestSubmit();
             }
         }

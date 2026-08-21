@@ -70,65 +70,39 @@ body.proxy-active .iframe-container.active { display: block; }
     </style>
 </head>
 <body>
-    <!-- 1. Top Tab Strip Layout -->
+    <!-- Keep your Tab Bar and Modals up here -->
     <div class="tab-bar" id="tab-bar">
         <button class="add-tab-btn" onclick="createNewTab()">+</button>
     </div>
-
-    <!-- 2. Settings Menu Button -->
     <button class="settings-btn" onclick="toggleModal()">⚙️</button>
-
-    <!-- 3. Customization Modal Box -->
-    <div class="modal" id="custom-modal">
-        <h3>Homepage Settings</h3>
-        <label>Theme Color:</label>
-        <select id="theme-select" onchange="changeTheme(this.value)">
-            <option value="default">Default Pink/Black</option>
-            <option value="ocean">Ocean Blue</option>
-            <option value="sunset">Sunset Orange</option>
-            <option value="dark">Midnight Dark</option>
-        </select>
-        <label>Custom Title:</label>
-        <input type="text" id="title-input" placeholder="HArF 5" oninput="changeTitle(this.value)" />
-        <button class="modal-close" onclick="toggleModal()">Save & Close</button>
-    </div>
-	
-	<label>Default Search Engine:</label> 
-<select id="engine-select" onchange="changeEngine(this.value)"> 
-    <option value="duckduckgo">DuckDuckGo</option> 
-    <option value="google">Google</option> 
-    <option value="bing">Bing</option> 
-    <option value="brave">Brave</option> 
-</select>
-
-
+    <div class="modal" id="custom-modal">...</div>
     <div id="boot-screen"></div>
 
-    <!-- 4. Main Desktop UI Elements -->
-    <div class="circle c1"></div>
-    <div class="circle c2"></div>
-    <div class="circle c3"></div>
-    <div class="title" id="main-title">HArF 5</div>
-    
-    <div class="links">
-        <a href="https://discord.gg/NHuADvevz" target="_blank">Discord Server</a> | <a href="games.html">Games</a>
+    <!-- 🌟 THE WRAPPER: Put your main home page content inside this container -->
+    <div id="homepage-content">
+        <!-- Decorative Background Circles -->
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+        <div class="circle c3"></div>
+        
+        <div class="title" id="main-title">HArF 5</div>
+        <div class="links">
+            <a href="https://discord.gg" target="_blank">Discord Server</a> | <a href="games.html">Games</a>
+        </div>
+        
+        <form id="sj-form" class="search-box">
+            <input id="sj-search-engine" value="https://google.com" type="hidden" />
+            <input id="sj-address" type="text" placeholder="Enter Link Here.." />
+        </form>
+        
+        <p id="sj-error"></p>
+        <pre id="sj-error-code"></pre>
+        <div class="footer">HArF 5 Beta 3.0</div>
     </div>
-    
-    <form id="sj-form" class="search-box">
-        <input id="sj-search-engine" value="https://google.com/search?q=%s" type="hidden" />
-        <input id="sj-address" type="text" placeholder="Enter Link Here.." />
-    </form>
-    
-    <p id="sj-error"></p>
-    <pre id="sj-error-code"></pre>
-    
-    <div class="footer">HArF 5 Beta 3.0</div>
 
-    <!-- 5. Active Tab Frame Storage Container -->
+    <!-- Active Tab Frame Container stays at the bottom -->
     <div id="browser-windows"></div>
-	
-	    <!-- 5. Active Tab Frame Storage Container -->
-    <div id="browser-windows"></div>
+
 
     <script>
         const themes = {
@@ -194,22 +168,33 @@ body.proxy-active .iframe-container.active { display: block; }
             switchTab(id);
         }
 
-        function switchTab(id) {
-            activeTabId = id;
-            const currentTab = tabs.find(t => t.id === id);
+	function switchTab(id) {
+    activeTabId = id;
+    const currentTab = tabs.find(t => t.id === id);
 
-            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-            document.getElementById('el-' + id)?.classList.add('active');
+    // Toggle active tab header styles
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('el-' + id)?.classList.add('active');
 
-            document.querySelectorAll('.iframe-container').forEach(el => el.classList.remove('active'));
+    // Toggle active iframe viewports
+    document.querySelectorAll('.iframe-container').forEach(el => el.classList.remove('active'));
 
-            if (currentTab && currentTab.isBrowsing) {
-                document.body.classList.add('proxy-active');
-                document.getElementById('win-' + id)?.classList.add('active');
-            } else {
-                document.body.classList.remove('proxy-active');
-            }
-        }
+    const homeUI = document.getElementById('homepage-content');
+
+    if (currentTab && currentTab.isBrowsing) {
+        // 🌟 HIDE HOMEPAGE CONTENT: Let the Scramjet game iframe fill the screen
+        if (homeUI) homeUI.style.display = "none";
+        
+        document.body.classList.add('proxy-active');
+        document.getElementById('win-' + id)?.classList.add('active');
+    } else {
+        // 🌟 SHOW HOMEPAGE CONTENT: Bring back the main title and search box
+        if (homeUI) homeUI.style.display = "block";
+        
+        document.body.classList.remove('proxy-active');
+    }
+}
+
 
         function closeTab(id, event) {
             event.stopPropagation();

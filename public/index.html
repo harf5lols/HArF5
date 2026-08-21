@@ -242,8 +242,18 @@ function changeEngine(engineName) {
     }
 }
 
-// Variable to store our incoming game parameter safely
-let queuedUrlToLoad = null;
+// 🌟 GLOBAL ATTACHMENT: Exposed instantly so index.js can catch it at any point
+const urlParams = new URLSearchParams(window.location.search);
+window.queuedUrlToLoad = urlParams.get('load');
+
+const themes = {
+    default: "linear-gradient(to bottom, #AB4398 50%, #000000 100%)",
+    ocean: "linear-gradient(to bottom, #005c97 50%, #363795 100%)",
+    sunset: "linear-gradient(to bottom, #e65c00 50%, #F9D423 100%)",
+    dark: "linear-gradient(to bottom, #141e30 50%, #243b55 100%)"
+};
+
+// ... keep your toggleModal, changeTheme, and changeTitle functions exactly the same ...
 
 window.addEventListener('DOMContentLoaded', () => { 
     const savedTheme = localStorage.getItem('harf-theme'); 
@@ -263,18 +273,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     changeEngine(savedEngine);
 
-    // 1. Instantly spin up your first browser UI tab viewport
+    // Creates your primary browser tab layout
     createNewTab(); 
-
-    // 2. Parse out if a user arrived from games.html with a ?load= parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameUrl = urlParams.get('load');
-    
-    if (gameUrl) {
-        // Stage it in memory so index.js can securely trigger it when WASM is verified alive
-        queuedUrlToLoad = gameUrl;
-    }
 });
+
 
 // Keep Awake Script for Render Free Tier Containers
 function keepProxyAlive() {

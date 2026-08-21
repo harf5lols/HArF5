@@ -17,19 +17,26 @@ async function waitForWasm() {
         document.getElementById("boot-screen")?.classList.add("hidden");
         console.log("🧬 WASM ready");
 
-        // 🌟 THE AUTO-LAUNCH GATEKEEPER: Safely triggers games now that WASM is fully ready
-        if (typeof queuedUrlToLoad !== "undefined" && queuedUrlToLoad !== null) {
+        // 🌟 RE-TIMED AUTO-LAUNCHER: Tracks the global variable safely
+        if (window.queuedUrlToLoad) {
             const addressInput = document.getElementById("sj-address");
             const proxyForm = document.getElementById("sj-form");
 
-            if (addressInput && proxyForm) {
-                // Insert the game URL cleanly into the address bar interface
-                addressInput.value = queuedUrlToLoad;
-                
-                // Clear out parameter to prevent infinite routing bugs
-                queuedUrlToLoad = null; 
+            // Safety loop: waits briefly if the HTML tab UI isn't completely rendered yet
+            let UIReadyAttempts = 0;
+            while ((typeof activeTabId === "undefined" || !activeTabId) && UIReadyAttempts < 20) {
+                await new Promise(r => setTimeout(r, 50));
+                UIReadyAttempts++;
+            }
 
-                // Safely execute form submit sequence using your verified Scramjet tabs
+            if (addressInput && proxyForm) {
+                // Populate the UI input field with the proxied game link
+                addressInput.value = window.queuedUrlToLoad;
+                
+                // Reset the global flag to prevent infinite reload looping glitches
+                window.queuedUrlToLoad = null; 
+
+                // Execute the form submission down your active Scramjet tabs
                 proxyForm.requestSubmit();
             }
         }

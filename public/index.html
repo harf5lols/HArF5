@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<!-- Paste these at the very top of your <head> section -->
-<link rel="preload" href="/scram/scramjet.wasm.wasm" as="fetch" type="application/wasm" crossorigin>
-<link rel="preload" href="/scram/scramjet.all.js" as="script">
+    <link rel="preload" href="/scram/scramjet.wasm.wasm" as="fetch" type="application/wasm" crossorigin>
+    <link rel="preload" href="/scram/scramjet.all.js" as="script">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HArF 5</title>
@@ -13,116 +12,121 @@
     <script src="search.js" defer></script>
     <script src="index.js" defer></script>
     <style>
-	body {
-    margin: 0; font-family: Comic Sans MS, sans-serif; text-align: center;
-    overflow: hidden; height: 100dvh; background-attachment: fixed;
-    background: linear-gradient(to bottom, #AB4398 50%, #000000 100%);
-    transition: background 0.3s ease;
-}
-.tab-bar {
-    display: flex; background: rgba(0, 0, 0, 0.4); padding: 5px 10px 0;
-    gap: 5px; align-items: flex-end; height: 40px; position: relative; z-index: 10;
-}
-.tab {
-    background: rgba(255, 255, 255, 0.2); color: white; padding: 6px 15px;
-    border-radius: 8px 8px 0 0; cursor: pointer; font-size: 14px;
-    display: flex; align-items: center; gap: 8px; max-width: 150px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.tab.active { background: rgba(255, 255, 255, 0.4); font-weight: bold; }
-.close-tab { cursor: pointer; font-weight: bold; opacity: 0.7; }
-.close-tab:hover { opacity: 1; }
-.add-tab-btn {
-    background: rgba(255, 255, 255, 0.3); border: none; color: white;
-    padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-bottom: 5px;
-}
-.settings-btn {
-    position: fixed; top: 50px; right: 20px; background: rgba(255, 255, 255, 0.2);
-    border: none; color: white; padding: 10px; border-radius: 50%;
-    cursor: pointer; font-size: 20px; z-index: 10;
-}
-.modal {
-    display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background: #222; color: white; padding: 25px; border-radius: 15px;
-    z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 300px;
-}
-.modal h3 { margin-top: 0; }
-.modal label { display: block; margin: 15px 0 5px; text-align: left; }
-.modal select, .modal input { width: 100%; padding: 8px; border-radius: 5px; border: none; box-sizing: border-box; }
-.modal-close { margin-top: 20px; background: #AB4398; border: none; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
-.title { margin-top: 60px; font-size: 60px; color: #ffffff; position: relative; z-index: 2; }
-.links { margin: 10px; color: #ffffff; position: relative; z-index: 2; }
-.links a { color: white; text-decoration: none; font-size: 18px; }
-.search-box { margin-top: 40px; position: relative; z-index: 2; }
-.search-box input { width: 400px; padding: 15px; border-radius: 25px; border: none; font-size: 16px; outline: none; }
-.circle { position: absolute; border-radius: 50%; opacity: 0.3; z-index: 1; }
-.c1 { width: 300px; height: 300px; background: white; left: 35%; top: 200px; }
-.c2 { width: 300px; height: 300px; background: lightblue; left: 50%; top: 200px; }
-.c3 { width: 300px; height: 300px; background: purple; left: 42%; top: 300px; }
-.footer { position: fixed; bottom: 10px; width: 100%; color: white; font-size: 14px; z-index: 2; }
-.iframe-container {
-    display: none; position: fixed; top: 40px; left: 0; width: 100vw;
-    height: calc(100vh - 40px); z-index: 2147483647; background: white;
-}
-body.proxy-active .iframe-container.active { display: block; }
-.iframe-container iframe, body.proxy-active #sj-frame { width: 100%; height: 100%; border: none; position: static; }
-
-/* Forces the active Scramjet frame to stretch across the viewport */
-#sj-frame, .iframe-container iframe {
-    position: fixed !important;
-    top: 40px !important; /* Positions it directly under your 40px top tab strip */
-    left: 0 !important;
-    width: 100vw !important;
-    height: calc(100vh - 40px) !important;
-    border: none !important;
-    z-index: 2147483647 !important;
-    background: white;
-}
-
-
+        body { 
+            margin: 0; font-family: Comic Sans MS, sans-serif; text-align: center; 
+            overflow: hidden; height: 100dvh; background-attachment: fixed;
+            background: linear-gradient(to bottom, #AB4398 50%, #000000 100%);
+            transition: background 0.3s ease;
+        }
+        .tab-bar { 
+            display: flex; background: rgba(0, 0, 0, 0.4); padding: 5px 10px 0; 
+            gap: 5px; align-items: flex-end; height: 40px; position: relative; z-index: 10;
+        }
+        .tab { 
+            background: rgba(255, 255, 255, 0.2); color: white; padding: 6px 15px; 
+            border-radius: 8px 8px 0 0; cursor: pointer; font-size: 14px; 
+            display: flex; align-items: center; gap: 8px; max-width: 150px; 
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
+        }
+        .tab.active { background: rgba(255, 255, 255, 0.4); font-weight: bold; }
+        .close-tab { cursor: pointer; font-weight: bold; opacity: 0.7; }
+        .close-tab:hover { opacity: 1; }
+        .add-tab-btn { 
+            background: rgba(255, 255, 255, 0.3); border: none; color: white; 
+            padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-bottom: 5px; 
+        }
+        .settings-btn {
+            position: fixed; top: 50px; right: 20px; background: rgba(255, 255, 255, 0.2); 
+            border: none; color: white; padding: 10px; border-radius: 50%; 
+            cursor: pointer; font-size: 20px; z-index: 10;
+        }
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #222; color: white; padding: 25px; border-radius: 15px; 
+            z-index: 100; box-shadow: 0 5px 15px rgba(0,0,0,0.5); width: 300px;
+        }
+        .modal h3 { margin-top: 0; }
+        .modal label { display: block; margin: 15px 0 5px; text-align: left; }
+        .modal select, .modal input { width: 100%; padding: 8px; border-radius: 5px; border: none; box-sizing: border-box; }
+        .modal-close { margin-top: 20px; background: #AB4398; border: none; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+        .title { margin-top: 60px; font-size: 60px; color: #ffffff; position: relative; z-index: 2; }
+        .links { margin: 10px; color: #ffffff; position: relative; z-index: 2; }
+        .links a { color: white; text-decoration: none; font-size: 18px; }
+        .search-box { margin-top: 40px; position: relative; z-index: 2; }
+        .search-box input { width: 400px; padding: 15px; border-radius: 25px; border: none; font-size: 16px; outline: none; }
+        .circle { position: absolute; border-radius: 50%; opacity: 0.3; z-index: 1; }
+        .c1 { width: 300px; height: 300px; background: white; left: 35%; top: 200px; }
+        .c2 { width: 300px; height: 300px; background: lightblue; left: 50%; top: 200px; }
+        .c3 { width: 300px; height: 300px; background: purple; left: 42%; top: 300px; }
+        .footer { position: fixed; bottom: 10px; width: 100%; color: white; font-size: 14px; z-index: 2; }
+        #sj-frame, .iframe-container iframe {
+            position: fixed !important; top: 40px !important; left: 0 !important;
+            width: 100vw !important; height: calc(100vh - 40px) !important;
+            border: none !important; z-index: 1 !important; background: white;
+        }
+        .iframe-container {
+            display: none; position: fixed; top: 40px; left: 0; width: 100vw;
+            height: calc(100vh - 40px); z-index: 2; background: white;
+        }
+        body.proxy-active .iframe-container.active { display: block; }
     </style>
 </head>
 <body>
-    <!-- Keep your Tab Bar and Modals up here -->
     <div class="tab-bar" id="tab-bar">
         <button class="add-tab-btn" onclick="createNewTab()">+</button>
     </div>
     <button class="settings-btn" onclick="toggleModal()">⚙️</button>
-    <div class="modal" id="custom-modal">...</div>
+    <div class="modal" id="custom-modal">
+        <h3>Homepage Settings</h3>
+        <label>Theme Color:</label>
+        <select id="theme-select" onchange="changeTheme(this.value)">
+            <option value="default">Default Pink/Black</option>
+            <option value="ocean">Ocean Blue</option>
+            <option value="sunset">Sunset Orange</option>
+            <option value="dark">Midnight Dark</option>
+        </select>
+        <label>Custom Title:</label>
+        <input type="text" id="title-input" placeholder="HArF 5" oninput="changeTitle(this.value)" />
+        <label>Default Search Engine:</label> 
+        <select id="engine-select" onchange="changeEngine(this.value)"> 
+            <option value="duckduckgo">DuckDuckGo</option> 
+            <option value="google">Google</option> 
+            <option value="bing">Bing</option> 
+            <option value="brave">Brave</option> 
+        </select>
+        <button class="modal-close" onclick="toggleModal()">Save & Close</button>
+    </div>
     <div id="boot-screen"></div>
-
-    <!-- 🌟 THE WRAPPER: Put your main home page content inside this container -->
     <div id="homepage-content">
-        <!-- Decorative Background Circles -->
         <div class="circle c1"></div>
         <div class="circle c2"></div>
         <div class="circle c3"></div>
-        
         <div class="title" id="main-title">HArF 5</div>
         <div class="links">
             <a href="https://discord.gg" target="_blank">Discord Server</a> | <a href="games.html">Games</a>
         </div>
-        
         <form id="sj-form" class="search-box">
             <input id="sj-search-engine" value="https://google.com" type="hidden" />
             <input id="sj-address" type="text" placeholder="Enter Link Here.." />
         </form>
-        
         <p id="sj-error"></p>
         <pre id="sj-error-code"></pre>
         <div class="footer">HArF 5 Beta 3.0</div>
     </div>
-
-    <!-- Active Tab Frame Container stays at the bottom -->
     <div id="browser-windows"></div>
-
-
     <script>
         const themes = {
             default: "linear-gradient(to bottom, #AB4398 50%, #000000 100%)",
             ocean: "linear-gradient(to bottom, #005c97 50%, #363795 100%)",
             sunset: "linear-gradient(to bottom, #e65c00 50%, #F9D423 100%)",
             dark: "linear-gradient(to bottom, #141e30 50%, #243b55 100%)"
+        };
+
+        const engines = {
+            duckduckgo: "https://duckduckgo.com",
+            google: "https://google.com",
+            bing: "https://bing.com",
+            brave: "https://brave.com"
         };
 
         function toggleModal() {
@@ -143,20 +147,26 @@ body.proxy-active .iframe-container.active { display: block; }
             }
         }
 
+        function changeEngine(engineName) {
+            const engineInput = document.getElementById('sj-search-engine');
+            if (engineInput && engines[engineName]) {
+                engineInput.value = engines[engineName];
+                localStorage.setItem('harf-engine', engineName);
+            }
+        }
+
         let tabs = [];
         let activeTabId = null;
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('harf-theme');
-            if (savedTheme) {
-                document.getElementById('theme-select').value = savedTheme;
-                changeTheme(savedTheme);
-            }
+            if (savedTheme) { document.getElementById('theme-select').value = savedTheme; changeTheme(savedTheme); }
             const savedTitle = localStorage.getItem('harf-title');
-            if (savedTitle) {
-                document.getElementById('title-input').value = savedTitle;
-                changeTitle(savedTitle);
-            }
+            if (savedTitle) { document.getElementById('title-input').value = savedTitle; changeTitle(savedTitle); }
+            const savedEngine = localStorage.getItem('harf-engine') || 'duckduckgo';
+            if (document.getElementById('engine-select')) document.getElementById('engine-select').value = savedEngine;
+            changeEngine(savedEngine);
+
             createNewTab();
         });
 
@@ -181,114 +191,41 @@ body.proxy-active .iframe-container.active { display: block; }
             switchTab(id);
         }
 
-	function switchTab(id) {
-    activeTabId = id;
-    const currentTab = tabs.find(t => t.id === id);
+        function switchTab(id) {
+            activeTabId = id;
+            const currentTab = tabs.find(t => t.id === id);
 
-    // Toggle active tab header styles
-    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-    document.getElementById('el-' + id)?.classList.add('active');
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('el-' + id)?.classList.add('active');
 
-    // Toggle active iframe viewports
-    document.querySelectorAll('.iframe-container').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.iframe-container').forEach(el => el.classList.remove('active'));
 
-    const homeUI = document.getElementById('homepage-content');
-
-    if (currentTab && currentTab.isBrowsing) {
-        // 🌟 HIDE HOMEPAGE CONTENT: Let the Scramjet game iframe fill the screen
-        if (homeUI) homeUI.style.display = "none";
-        
-        document.body.classList.add('proxy-active');
-        document.getElementById('win-' + id)?.classList.add('active');
-    } else {
-        // 🌟 SHOW HOMEPAGE CONTENT: Bring back the main title and search box
-        if (homeUI) homeUI.style.display = "block";
-        
-        document.body.classList.remove('proxy-active');
-    }
-}
-
+            const homeUI = document.getElementById('homepage-content');
+            if (currentTab && currentTab.isBrowsing) {
+                if (homeUI) homeUI.style.display = "none";
+                document.body.classList.add('proxy-active');
+                document.getElementById('win-' + id)?.classList.add('active');
+            } else {
+                if (homeUI) homeUI.style.display = "block";
+                document.body.classList.remove('proxy-active');
+            }
+        }
 
         function closeTab(id, event) {
             event.stopPropagation();
             if (tabs.length === 1) return;
-
             tabs = tabs.filter(t => t.id !== id);
             document.getElementById('el-' + id).remove();
             document.getElementById('win-' + id).remove();
-
-            if (activeTabId === id) {
-                switchTab(tabs[tabs.length - 1].id);
-            }
+            if (activeTabId === id) switchTab(tabs[tabs.length - 1].id);
         }
-		
-		
-		// Add this engine map right beneath your 'const themes = { ... };' object
-const engines = {
-    duckduckgo: "https://duckduckgo.com",
-    google: "https://google.com",
-    bing: "https://bing.com",
-    brave: "https://brave.com"
-};
 
-// Add this function right beneath your 'changeTitle' function
-function changeEngine(engineName) {
-    const engineInput = document.getElementById('sj-search-engine');
-    if (engineInput && engines[engineName]) {
-        engineInput.value = engines[engineName];
-        localStorage.setItem('harf-engine', engineName);
-    }
-}
-
-// 🌟 GLOBAL ATTACHMENT: Exposed instantly so index.js can catch it at any point
-const urlParams = new URLSearchParams(window.location.search);
-window.queuedUrlToLoad = urlParams.get('load');
-
-const themes = {
-    default: "linear-gradient(to bottom, #AB4398 50%, #000000 100%)",
-    ocean: "linear-gradient(to bottom, #005c97 50%, #363795 100%)",
-    sunset: "linear-gradient(to bottom, #e65c00 50%, #F9D423 100%)",
-    dark: "linear-gradient(to bottom, #141e30 50%, #243b55 100%)"
-};
-
-// ... keep your toggleModal, changeTheme, and changeTitle functions exactly the same ...
-
-window.addEventListener('DOMContentLoaded', () => { 
-    const savedTheme = localStorage.getItem('harf-theme'); 
-    if (savedTheme) {
-        document.getElementById('theme-select').value = savedTheme;
-        changeTheme(savedTheme); 
-    }
-    const savedTitle = localStorage.getItem('harf-title'); 
-    if (savedTitle) {
-        document.getElementById('title-input').value = savedTitle;
-        changeTitle(savedTitle); 
-    }
-    
-    const savedEngine = localStorage.getItem('harf-engine') || 'duckduckgo';
-    if(document.getElementById('engine-select')) {
-        document.getElementById('engine-select').value = savedEngine;
-    }
-    changeEngine(savedEngine);
-
-    // Creates your primary browser tab layout
-    createNewTab(); 
-});
-
-
-// Keep Awake Script for Render Free Tier Containers
-function keepProxyAlive() {
-    // Dynamically fetches your current active deployment domain link
-    fetch(window.location.origin)
-        .then(() => console.log("⏰ Keep-alive heartbeat successful"))
-        .catch(err => console.error("Keep-alive failed:", err));
-}
-
-// Automatically fires a web request every 5 minutes (300,000 ms) 
-// This prevents Render from detecting 15 minutes of inactivity!
-setInterval(keepProxyAlive, 300000); 
-
-
+        function keepProxyAlive() {
+            fetch(window.location.origin)
+                .then(() => console.log("⏰ Keep-alive heartbeat successful"))
+                .catch(err => console.error("Keep-alive failed:", err));
+        }
+        setInterval(keepProxyAlive, 300000);
     </script>
 </body>
 </html>

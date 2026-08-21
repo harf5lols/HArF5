@@ -17,30 +17,50 @@ async function waitForWasm() {
         document.getElementById("boot-screen")?.classList.add("hidden");
         console.log("🧬 WASM ready");
 
-        // 🌟 FORCE AUTO-LAUNCH ON STARTUP:
+        // 🌟 FIXED AUTO-LAUNCH ROUTING:
         const urlParams = new URLSearchParams(window.location.search);
         const gameUrlToLoad = urlParams.get('load');
 
         if (gameUrlToLoad) {
-            // Keep waiting until your HTML script initializes activeTabId and tabs array
+            // Safety loop: wait until the home screen scripts build out your tab array structures
             let tabReadyAttempts = 0;
             while ((typeof activeTabId === "undefined" || !activeTabId) && tabReadyAttempts < 50) {
                 await new Promise(r => setTimeout(r, 50));
                 tabReadyAttempts++;
             }
 
-            const addressInput = document.getElementById("sj-address");
-            const proxyForm = document.getElementById("sj-form");
+            const activeWindow = document.getElementById('win-' + activeTabId);
+            const currentTab = typeof tabs !== "undefined" ? tabs.find(t => t.id === activeTabId) : null;
 
-            if (addressInput && proxyForm) {
-                // Input the game destination and execute the proxy submit handler
-                addressInput.value = gameUrlToLoad;
+            if (activeWindow && currentTab) {
+                activeWindow.innerHTML = "";
                 
-                // Clear out parameters from the browser's address history bar cleanly
+                // Set up Scramjet encoding logic
+                const cleanEngine = searchEngine ? searchEngine.value : "https://duckduckgo.com";
+                const proxiedUrl = search(gameUrlToLoad, cleanEngine);
+
+                let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+                if ((await connection.getTransport()) !== "/libcurl/index.mjs") {
+                    await connection.setTransport("/libcurl/index.mjs", [{ websocket: wispUrl }]);
+                }
+
+                // Append Scramjet natively inside the tab sandbox container
+                const frame = scramjet.createFrame();
+                frame.frame.id = "sj-frame";
+                activeWindow.appendChild(frame.frame);
+                
+                currentTab.isBrowsing = true;
+                currentTab.url = proxiedUrl;
+
+                const tabLabel = document.getElementById('el-' + activeTabId)?.querySelector('.tab-title');
+                if (tabLabel) tabLabel.textContent = gameUrlToLoad.replace('https://', '');
+
+                // Push page frame launch sequence
+                frame.go(proxiedUrl);
+                switchTab(activeTabId);
+                
+                // Clear the address query string out of local history to prevent reload bugs
                 window.history.replaceState({}, document.title, window.location.pathname);
-                
-                // Fire request down your Scramjet tab pipeline
-                proxyForm.requestSubmit();
             }
         }
     } else {

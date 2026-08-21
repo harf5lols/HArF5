@@ -77,7 +77,7 @@ async function executeProxyRoute(rawInputValue) {
 
             const tabLabel = document.getElementById('el-' + activeTabId)?.querySelector('.tab-title');
             if (tabLabel) {
-                tabLabel.textContent = rawInputValue.replace('https://', '');
+                tabLabel.textContent = rawInputValue.replace('https://', '').substring(0, 15);
             }
 
             frame.go(url);
@@ -88,7 +88,6 @@ async function executeProxyRoute(rawInputValue) {
         }
     }
 }
-
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
